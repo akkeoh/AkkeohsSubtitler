@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C3D4E5F6-A7B8-9012-CDEF-123456789012}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>AkkeohsVegas.Installer</RootNamespace>
+    <AssemblyName>AkkeohsSubtitlesSetup</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Resources\akkeoh.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AkkeohsVegas.Core\AkkeohsVegas.Core.csproj">
+      <Project>{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}</Project>
+      <Name>AkkeohsVegas.Core</Name>
+      <Private>false</Private>
+    </ProjectReference>
+    
+    <ProjectReference Include="..\AkkeohsVegas.Extension\AkkeohsVegas.Extension.csproj">
+      <Project>{B2C3D4E5-F6A7-8901-BCDE-F12345678901}</Project>
+      <Name>AkkeohsVegas.Extension</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Private>false</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="MainForm.cs" />
+    <Compile Include="InstallService.cs" />
+    <Compile Include="DependencyCatalog.cs" />
+    <Compile Include="DependencyDownloader.cs" />
+    <Compile Include="EmbeddedPayload.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.manifest" />
+    <Content Include="Resources\akkeoh.ico" />
+    <EmbeddedResource Include="Resources\akkeoh_64x64.png" />
+  </ItemGroup>
+  
+  <Target Name="EmbedPayloadAssemblies" AfterTargets="ResolveProjectReferences" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <_PayloadCoreDll>$(MSBuildThisFileDirectory)..\AkkeohsVegas.Core\bin\$(Configuration)\AkkeohsVegas.Core.dll</_PayloadCoreDll>
+      <_PayloadExtDll>$(MSBuildThisFileDirectory)..\AkkeohsVegas.Extension\bin\$(Configuration)\AkkeohsVegas.Extension.dll</_PayloadExtDll>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(_PayloadCoreDll)')" Text="Missing $(_PayloadCoreDll). Build AkkeohsVegas.Core first." />
+    <Error Condition="!Exists('$(_PayloadExtDll)')" Text="Missing $(_PayloadExtDll). Build AkkeohsVegas.Extension first." />
+    <ItemGroup>
+      <EmbeddedResource Include="$(_PayloadCoreDll)">
+        <LogicalName>AkkeohsVegas.Installer.Payload.AkkeohsVegas.Core.dll</LogicalName>
+        <Link>Payload\AkkeohsVegas.Core.dll</Link>
+      </EmbeddedResource>
+      <EmbeddedResource Include="$(_PayloadExtDll)">
+        <LogicalName>AkkeohsVegas.Installer.Payload.AkkeohsVegas.Extension.dll</LogicalName>
+        <Link>Payload\AkkeohsVegas.Extension.dll</Link>
+      </EmbeddedResource>
+    </ItemGroup>
+  </Target>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

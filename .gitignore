@@ -1,0 +1,60 @@
+# Build outputs
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+dist/
+dist.rar
+*.rar
+publish/
+artifacts/
+TestResults/
+[Pp]ackages/
+*.nupkg
+*.snupkg
+
+# Visual Studio / Rider / VS Code
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.rsuser
+*.DotSettings.user
+_ReSharper*/
+*.[Rr]e[Ss]harper
+.idea/
+*.iml
+
+# Local / machine files
+*.log
+*.tmp
+*.temp
+*.cache
+*.partial
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# VEGAS reference assembly (obtained locally; stub sources stay in lib/stubs)
+lib/ScriptPortal.Vegas.dll
+lib/*.pdb
+lib/*.xml
+
+# Local third-party payloads (downloaded at install or dropped manually)
+third_party/bin/
+third_party/models/
+*.ggml
+*.bin
+!assets/**
+
+# Local packaging / duplicates (logo lives under src/.../Resources)
+/akkeoh_64x64.png
+/installer/
+*.zip
+!**/packages.lock.json
+
+# OS / editor swap
+*~
+*.swp
+*.bak

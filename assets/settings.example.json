@@ -1,0 +1,23 @@
+## Example settings.json
+Copied to `%LocalAppData%\AkkeohsSubtitlesForVegas\settings.json` (user-writable).
+
+```json
+{
+  "AkkeohsCliPath": "C:\\Program Files (x86)\\AkkeohsSubtitlesForVegas\\bin\\whisper-cli.exe",
+  "FfmpegPath": "C:\\Program Files (x86)\\AkkeohsSubtitlesForVegas\\bin\\ffmpeg.exe",
+  "ModelsDirectory": "C:\\Program Files (x86)\\AkkeohsSubtitlesForVegas\\models",
+  "ModelFileName": "ggml-base.bin",
+  "Language": "auto",
+  "Threads": 4,
+  "TranslateToEnglish": false,
+  "MaxSegmentChars": 42,
+  "TrackName": "Akkeoh Subtitles",
+  "TextGeneratorName": "Sony Titles & Text",
+  "FontFamily": "Arial",
+  "FontSize": 14,
+  "PanCropPlacement": "Lower Third",
+  "TimingOffsetMs": 0
+}
+```
+
+`PanCropPlacement` options: Default, Lower Third, Bottom Center, Bottom Left, Bottom Right, Top Center, Top Left, Top Right, Center.
