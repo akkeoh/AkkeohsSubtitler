@@ -64,6 +64,7 @@ namespace AkkeohsVegas.Installer
             if (coreDll == null || !File.Exists(coreDll))
                 throw new FileNotFoundException("AkkeohsVegas.Core.dll is missing (not bundled and no payload folder).");
 
+            // Always use the current product folder (never reuse legacy WhisperSubtitlesForVegas).
             string pf = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
                 AppPaths.ProductFolderName);
@@ -121,6 +122,7 @@ namespace AkkeohsVegas.Installer
                 string uninstallerPath = Path.Combine(installRoot, UninstallerFileName);
                 string currentExe = Application.ExecutablePath;
                 File.Copy(currentExe, uninstallerPath, true);
+                // Uninstaller is the same single-file EXE (Core is loaded from embedded resources).
 
                 var manifest = new InstallManifest
                 {
@@ -175,6 +177,7 @@ namespace AkkeohsVegas.Installer
             }
         }
 
+        /// <summary>Best-effort cleanup of temp cache and incomplete product folders after a failed install.</summary>
         public void CleanupAfterFailedInstall()
         {
             TryDeleteDir(SetupCacheDirectory);
@@ -190,7 +193,7 @@ namespace AkkeohsVegas.Installer
             {
                 if (!Directory.Exists(root))
                     continue;
-
+                // Only wipe if install never finished (no uninstaller registered / no complete manifest marker).
                 string manifest = Path.Combine(root, ManifestFileName);
                 string uninstaller = Path.Combine(root, UninstallerFileName);
                 if (File.Exists(manifest) && File.Exists(uninstaller))
@@ -279,8 +282,9 @@ namespace AkkeohsVegas.Installer
                 ? manifest.InstallRoot
                 : AppPaths.InstallRoot;
 
+            // Delete everything we can while still running (bin, models, DLLs, manifest, etc.).
             TryDeleteDirectoryContents(installRoot, skipFileName: null);
-
+            // Explicitly try known leftovers (running uninstaller / Core may still be locked).
             TryDeleteFile(Path.Combine(installRoot, "AkkeohsVegas.Core.dll"));
             TryDeleteFile(Path.Combine(installRoot, "AkkeohsVegas.Extension.dll"));
             TryDeleteFile(Path.Combine(installRoot, ManifestFileName));
@@ -293,6 +297,7 @@ namespace AkkeohsVegas.Installer
             TryDeleteDir(SetupCacheDirectory);
             TryDeleteDir(AppPaths.TempWorkDirectory);
 
+            // Also clear legacy product folders if present.
             TryDeleteDir(Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
                 "WhisperSubtitlesForVegas"));
@@ -302,6 +307,7 @@ namespace AkkeohsVegas.Installer
 
             RemoveUninstallRegistry();
 
+            // Finish removing the install folder + this EXE after we exit (files may be locked now).
             ScheduleRemoveInstallRoot(installRoot);
 
             _log("Uninstall finished. Restart VEGAS if it is open.");
@@ -319,7 +325,7 @@ namespace AkkeohsVegas.Installer
                 sb.AppendLine("@echo off");
                 sb.AppendLine("ping 127.0.0.1 -n 3 >nul");
                 sb.AppendLine("rmdir /s /q \"" + installRoot + "\"");
-
+                // Fallback deletes if rmdir partially failed while EXE was still mapped.
                 sb.AppendLine("del /f /q \"" + Path.Combine(installRoot, UninstallerFileName) + "\" >nul 2>&1");
                 sb.AppendLine("del /f /q \"" + Path.Combine(installRoot, "AkkeohsVegas.Core.dll") + "\" >nul 2>&1");
                 sb.AppendLine("del /f /q \"" + Path.Combine(installRoot, "AkkeohsVegas.Extension.dll") + "\" >nul 2>&1");

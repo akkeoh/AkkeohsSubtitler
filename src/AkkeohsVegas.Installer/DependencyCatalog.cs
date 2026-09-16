@@ -7,7 +7,7 @@ namespace AkkeohsVegas.Installer
     {
         public string FileName { get; set; }
         public string DisplayName { get; set; }
-
+        /// <summary>Standard whisper.cpp model id (e.g. tiny, base.en, large-v3).</summary>
         public string StandardName { get; set; }
         public string Url { get; set; }
         public bool Required { get; set; }
@@ -20,6 +20,7 @@ namespace AkkeohsVegas.Installer
         }
     }
 
+    /// <summary>Pinned download URLs for third-party components.</summary>
     public static class DependencyCatalog
     {
         public const string WhisperCppZipUrl =
@@ -28,6 +29,7 @@ namespace AkkeohsVegas.Installer
         public const string FfmpegZipUrl =
             "https://github.com/GyanD/codexffmpeg/releases/download/9.0.1/ffmpeg-9.0.1-essentials_build.zip";
 
+        // Approximate installed footprint (not zip download size).
         public const long WhisperCppApproxBytes = 30L * 1024 * 1024;
         public const long FfmpegApproxBytes = 100L * 1024 * 1024;
         public const long ExtensionApproxBytes = 2L * 1024 * 1024;

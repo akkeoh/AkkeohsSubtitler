@@ -6,8 +6,8 @@ namespace AkkeohsVegas.Core
 {
     public sealed class PluginSettings
     {
-        public const int DefaultTextColorArgb = -1;
-        public const int DefaultOutlineColorArgb = -16777216;
+        public const int DefaultTextColorArgb = -1; // White opaque (0xFFFFFFFF)
+        public const int DefaultOutlineColorArgb = -16777216; // Black opaque (0xFF000000)
 
         public string AkkeohsCliPath { get; set; }
         public string FfmpegPath { get; set; }
@@ -21,17 +21,19 @@ namespace AkkeohsVegas.Core
         public string TextGeneratorName { get; set; }
         public string FontFamily { get; set; }
         public float FontSize { get; set; }
-
+        /// <summary>"Capitalized" (ALL CAPS) or "Normal".</summary>
         public string TextStyle { get; set; }
-
+        /// <summary>Fill color as ARGB (System.Drawing.Color.ToArgb).</summary>
         public int TextColorArgb { get; set; }
-
+        /// <summary>Titles &amp; Text OutlineWidth (0–10).</summary>
         public double OutlineWidth { get; set; }
-
+        /// <summary>Outline color as ARGB.</summary>
         public int OutlineColorArgb { get; set; }
-
+        /// <summary>Event Pan/Crop preset name (see <see cref="PanCropPlacements"/>).</summary>
         public string PanCropPlacement { get; set; }
-
+        /// <summary>
+        /// Extra delay applied to all subtitle times (ms). Positive = later / after speech.
+        /// </summary>
         public double TimingOffsetMs { get; set; }
 
         public PluginSettings()
@@ -47,7 +49,7 @@ namespace AkkeohsVegas.Core
             TrackName = ProductInfo.DefaultTrackName;
             TextGeneratorName = "Sony Titles & Text";
             FontFamily = "Arial";
-
+            // Keep default small so Titles & Text stays inside the frame after Pan/Crop.
             FontSize = 14f;
             TextStyle = "Capitalized";
             TextColorArgb = DefaultTextColorArgb;
@@ -80,7 +82,7 @@ namespace AkkeohsVegas.Core
             }
             catch
             {
-
+                // Fall through to defaults.
             }
             return new PluginSettings();
         }
@@ -95,7 +97,7 @@ namespace AkkeohsVegas.Core
             }
             catch (UnauthorizedAccessException)
             {
-
+                // Never fail the host workflow over settings I/O.
             }
             catch (IOException)
             {
@@ -130,7 +132,7 @@ namespace AkkeohsVegas.Core
                 s.FontSize = 8f;
             if (s.FontSize > 72f)
                 s.FontSize = 72f;
-
+            // Legacy JSON without color fields deserializes as 0 — treat as defaults.
             if (s.TextColorArgb == 0)
                 s.TextColorArgb = DefaultTextColorArgb;
             if (string.Equals(s.TextStyle, "Normal", StringComparison.OrdinalIgnoreCase))

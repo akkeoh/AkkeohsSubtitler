@@ -5,7 +5,9 @@ using System.Text.RegularExpressions;
 
 namespace AkkeohsVegas.Core
 {
-
+    /// <summary>
+    /// A detected (or custom) VEGAS Application Extensions install target.
+    /// </summary>
     public sealed class VegasExtensionTarget
     {
         public string DisplayName { get; private set; }
@@ -37,6 +39,9 @@ namespace AkkeohsVegas.Core
         }
     }
 
+    /// <summary>
+    /// Resolves install locations for binaries, models, and settings.
+    /// </summary>
     public static class AppPaths
     {
         public const string ProductFolderName = "AkkeohsSubtitlesForVegas";
@@ -52,6 +57,7 @@ namespace AkkeohsVegas.Core
             }
         }
 
+        /// <summary>Per-user settings (writable without admin).</summary>
         public static string UserDataRoot
         {
             get
@@ -67,6 +73,7 @@ namespace AkkeohsVegas.Core
             get { return Path.Combine(UserDataRoot, SettingsFileName); }
         }
 
+        /// <summary>Legacy all-users settings written by older installs.</summary>
         public static string LegacySettingsPath
         {
             get { return Path.Combine(ProgramDataRoot, SettingsFileName); }
@@ -125,11 +132,13 @@ namespace AkkeohsVegas.Core
             }
         }
 
+        /// <summary>VEGAS Pro 15 Application Extensions folder (all users).</summary>
         public static string Vegas15ApplicationExtensions
         {
             get { return GetVersionedApplicationExtensions("15.0"); }
         }
 
+        /// <summary>Shared / legacy Application Extensions folder used by some installs.</summary>
         public static string VegasApplicationExtensionsFallback
         {
             get
@@ -170,6 +179,9 @@ namespace AkkeohsVegas.Core
             }
         }
 
+        /// <summary>
+        /// Discovers actually installed VEGAS Pro instances (ProgramData version folders and/or exe paths).
+        /// </summary>
         public static IList<VegasExtensionTarget> DiscoverInstalledVegasInstances()
         {
             var results = new List<VegasExtensionTarget>();
@@ -186,6 +198,7 @@ namespace AkkeohsVegas.Core
                     if (!Regex.IsMatch(name, @"^\d+(\.\d+)?$"))
                         continue;
 
+                    // Treat a version folder as installed if it exists (Application Extensions may be created on install).
                     string ext = Path.Combine(dir, "Application Extensions");
                     if (!seenVersions.Add(name))
                         continue;
@@ -200,6 +213,7 @@ namespace AkkeohsVegas.Core
                 }
             }
 
+            // Also map found executables to version folders when ProgramData was empty/incomplete.
             foreach (string exe in FindInstalledVegasExecutables())
             {
                 string version = GuessVersionFolderFromPath(exe);
@@ -245,6 +259,10 @@ namespace AkkeohsVegas.Core
             return null;
         }
 
+        /// <summary>
+        /// Discovers VEGAS Application Extensions targets under ProgramData and Documents.
+        /// Also offers known MAGIX-era version folders even if not yet created.
+        /// </summary>
         public static IList<VegasExtensionTarget> DiscoverExtensionTargets()
         {
             var results = new List<VegasExtensionTarget>();
@@ -253,6 +271,7 @@ namespace AkkeohsVegas.Core
             foreach (VegasExtensionTarget installed in DiscoverInstalledVegasInstances())
                 AddTarget(results, seen, installed);
 
+            // Known MAGIX-era ScriptPortal versions (14–18 highly compatible; 19+ experimental).
             string[] knownVersions =
             {
                 "14.0", "15.0", "16.0", "17.0", "18.0",
@@ -265,6 +284,7 @@ namespace AkkeohsVegas.Core
                 AddTarget(results, seen, BuildVersionTarget(version, ext, Directory.Exists(Path.GetDirectoryName(ext))));
             }
 
+            // Shared fallback folder.
             AddTarget(
                 results,
                 seen,
@@ -276,6 +296,7 @@ namespace AkkeohsVegas.Core
                     false,
                     Directory.Exists(VegasApplicationExtensionsFallback)));
 
+            // Per-user Documents path (loaded by many Vegas versions).
             AddTarget(
                 results,
                 seen,
@@ -291,6 +312,7 @@ namespace AkkeohsVegas.Core
             return results;
         }
 
+        /// <summary>Targets that should be checked by default in the installer.</summary>
         public static IList<VegasExtensionTarget> GetDefaultSelectedTargets(IList<VegasExtensionTarget> all)
         {
             var selected = new List<VegasExtensionTarget>();
@@ -302,6 +324,7 @@ namespace AkkeohsVegas.Core
                 if (t == null)
                     continue;
 
+                // Prefer every detected versioned ProgramData folder + Documents.
                 if (t.IsPerUser)
                 {
                     selected.Add(t);
@@ -314,7 +337,7 @@ namespace AkkeohsVegas.Core
                     if (!string.IsNullOrEmpty(parent) && Directory.Exists(parent))
                         selected.Add(t);
                     else if (string.Equals(t.VersionFolder, "15.0", StringComparison.OrdinalIgnoreCase))
-                        selected.Add(t);
+                        selected.Add(t); // always offer 15.0 as the primary build target
                 }
             }
 
@@ -367,6 +390,7 @@ namespace AkkeohsVegas.Core
             }
         }
 
+        /// <summary>Legacy name kept for callers; finds any nearby VEGAS ScriptPortal.dll.</summary>
         public static string FindVegas15ScriptPortalDll()
         {
             return FindAnyScriptPortalDll();
@@ -383,6 +407,7 @@ namespace AkkeohsVegas.Core
             return null;
         }
 
+        /// <summary>Legacy name kept for callers; finds VEGAS Pro 15 exe if present.</summary>
         public static string FindVegas15Executable()
         {
             return FindVegasExecutable("15");

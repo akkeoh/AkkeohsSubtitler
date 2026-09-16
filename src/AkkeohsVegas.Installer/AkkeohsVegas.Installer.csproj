@@ -47,7 +47,7 @@
       <Name>AkkeohsVegas.Core</Name>
       <Private>false</Private>
     </ProjectReference>
-    
+    <!-- Build Extension before Installer so we can embed its DLL; do not reference it for compile. -->
     <ProjectReference Include="..\AkkeohsVegas.Extension\AkkeohsVegas.Extension.csproj">
       <Project>{B2C3D4E5-F6A7-8901-BCDE-F12345678901}</Project>
       <Name>AkkeohsVegas.Extension</Name>
@@ -69,7 +69,7 @@
     <Content Include="Resources\akkeoh.ico" />
     <EmbeddedResource Include="Resources\akkeoh_64x64.png" />
   </ItemGroup>
-  
+  <!-- Embed built plugin DLLs into the setup EXE (single-file distribution). -->
   <Target Name="EmbedPayloadAssemblies" AfterTargets="ResolveProjectReferences" BeforeTargets="CoreCompile">
     <PropertyGroup>
       <_PayloadCoreDll>$(MSBuildThisFileDirectory)..\AkkeohsVegas.Core\bin\$(Configuration)\AkkeohsVegas.Core.dll</_PayloadCoreDll>

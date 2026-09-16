@@ -4,7 +4,10 @@ using System.Reflection;
 
 namespace AkkeohsVegas.Installer
 {
-
+    /// <summary>
+    /// Loads / extracts AkkeohsVegas.Core and Extension DLLs that are embedded in the setup EXE
+    /// so distribution can be a single file.
+    /// </summary>
     internal static class EmbeddedPayload
     {
         public const string CoreFileName = "AkkeohsVegas.Core.dll";
@@ -28,6 +31,7 @@ namespace AkkeohsVegas.Installer
             return HasResource(asm, CoreResourceName) && HasResource(asm, ExtensionResourceName);
         }
 
+        /// <summary>Writes embedded plugin DLLs to a temp folder and returns that path.</summary>
         public static string ExtractToDirectory(string directory)
         {
             if (string.IsNullOrWhiteSpace(directory))

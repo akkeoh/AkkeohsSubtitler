@@ -10,7 +10,7 @@ namespace AkkeohsVegas.Installer
     {
         static Program()
         {
-
+            // Must run before any type from AkkeohsVegas.Core is loaded.
             EmbeddedPayload.RegisterAssemblyResolver();
         }
 

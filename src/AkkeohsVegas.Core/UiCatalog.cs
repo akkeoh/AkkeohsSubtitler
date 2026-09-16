@@ -36,6 +36,7 @@ namespace AkkeohsVegas.Core
             new NamedOption("ggml-large-v3.bin", "Ultra")
         };
 
+        /// <summary>Returns catalog entries whose files exist under <paramref name="modelsDirectory"/>.</summary>
         public static NamedOption[] GetInstalled(string modelsDirectory)
         {
             var list = new List<NamedOption>();
@@ -49,6 +50,7 @@ namespace AkkeohsVegas.Core
                     list.Add(opt);
             }
 
+            // Include unknown .bin files present on disk so custom drops still appear.
             try
             {
                 foreach (string file in Directory.GetFiles(modelsDirectory, "*.bin"))
@@ -85,7 +87,7 @@ namespace AkkeohsVegas.Core
         public static NamedOption FindByFileName(string modelFileName)
         {
             if (string.IsNullOrWhiteSpace(modelFileName))
-                return All[0];
+                return All[0]; // Fast
 
             foreach (NamedOption opt in All)
             {
@@ -93,6 +95,7 @@ namespace AkkeohsVegas.Core
                     return opt;
             }
 
+            // Allow unknown custom filenames.
             return new NamedOption(modelFileName.Trim(), modelFileName.Trim());
         }
 
@@ -110,6 +113,7 @@ namespace AkkeohsVegas.Core
                 }
             }
 
+            // Prefer Fast / Fast English when present.
             foreach (NamedOption opt in installed)
             {
                 if (string.Equals(opt.Id, "ggml-tiny.bin", StringComparison.OrdinalIgnoreCase))

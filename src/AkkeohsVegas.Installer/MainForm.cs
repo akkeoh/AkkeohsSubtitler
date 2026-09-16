@@ -584,7 +584,7 @@ namespace AkkeohsVegas.Installer
         private static string ResolvePayloadRoot()
         {
             if (EmbeddedPayload.HasEmbeddedAssemblies())
-                return null;
+                return null; // InstallService extracts bundled DLLs itself.
 
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
             string[] candidates =
@@ -667,7 +667,7 @@ namespace AkkeohsVegas.Installer
                 return;
             }
 
-            string payload = ResolvePayloadRoot();
+            string payload = ResolvePayloadRoot(); // may be null when using embedded payload
 
             List<ModelDownloadOption> models = GetSelectedModels();
             if (_installCts != null)
@@ -715,7 +715,7 @@ namespace AkkeohsVegas.Installer
                 else
                 {
                     Log("ERROR: " + ex.Message);
-
+                    // Ensure temp/partial cleanup even for unexpected failures.
                     try
                     {
                         var cleanup = new InstallService(msg => Log(msg));

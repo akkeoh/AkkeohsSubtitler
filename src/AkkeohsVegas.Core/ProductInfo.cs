@@ -1,6 +1,6 @@
 namespace AkkeohsVegas.Core
 {
-
+    /// <summary>User-facing product naming.</summary>
     public static class ProductInfo
     {
         public const string DisplayName = "Akkeoh's Subtitler";

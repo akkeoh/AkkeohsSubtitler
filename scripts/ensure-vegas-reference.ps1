@@ -1,4 +1,4 @@
-
+# Copy ScriptPortal.Vegas.dll from a VEGAS Pro 15 install, or build the compile stub.
 
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot

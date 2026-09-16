@@ -8,7 +8,10 @@ using AkkeohsVegas.Core;
 
 namespace AkkeohsVegas.Extension
 {
-
+    /// <summary>
+    /// Dockable panel for Akkeoh's Subtitler.
+    /// Absolute layout (VEGAS dock hosts collapse TableLayoutPanel).
+    /// </summary>
     public class AkkeohsDockView : DockableControl
     {
         public const string ViewId = "AkkeohSubtitlerView";
@@ -540,7 +543,7 @@ namespace AkkeohsVegas.Extension
 
         private void ReportProgress(string message, int? percent)
         {
-
+            // Progress is shown only via the Generate button spinner.
         }
 
         private void SetBusy(bool busy)

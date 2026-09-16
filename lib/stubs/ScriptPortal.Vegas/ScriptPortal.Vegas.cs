@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 namespace ScriptPortal.Vegas
 {
+    // Compile-time stub so the solution builds without a VEGAS Pro install.
+    // At runtime, VEGAS Pro provides the real ScriptPortal.Vegas.dll.
 
     public class Vegas
     {

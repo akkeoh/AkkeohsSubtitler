@@ -1,4 +1,5 @@
-
+# Build Akkeoh's Subtitler for Vegas Pro 15
+# Requires: MSBuild (VS 2017+) and .NET Framework 4.7.2 targeting pack
 
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
@@ -33,6 +34,7 @@ New-Item -ItemType Directory -Force -Path $dist | Out-Null
 
 Copy-Item "$Root\src\AkkeohsVegas.Installer\bin\Release\AkkeohsSubtitlesSetup.exe" $dist -Force
 
+# Optional offline extras (not required for distribution; installer downloads at runtime).
 $payload = Join-Path $dist "payload"
 New-Item -ItemType Directory -Force -Path "$payload\bin", "$payload\models" | Out-Null
 $tpBin = Join-Path $Root "third_party\bin"

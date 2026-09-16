@@ -139,8 +139,7 @@ namespace AkkeohsVegas.Installer
         {
             cancel.ThrowIfCancellationRequested();
             Directory.CreateDirectory(binDir);
-            if (File.Exists(Path.Combine(binDir, "whisper-cli.exe"))
-                && File.Exists(Path.Combine(binDir, "whisper.dll")))
+            if (HasCompleteWhisperBinaries(binDir))
             {
                 _log("whisper.cpp binaries already present.");
                 return;
@@ -167,6 +166,9 @@ namespace AkkeohsVegas.Installer
             CopyMatching(extractDir, binDir, "whisper.dll");
             CopyMatching(extractDir, binDir, "ggml.dll");
             CopyMatching(extractDir, binDir, "ggml-base.dll");
+            // Official whisper-bin-x64.zip ships ggml-cpu.dll (exact name). Also copy
+            // ggml-cpu-*.dll variants if a future build uses that naming.
+            CopyMatching(extractDir, binDir, "ggml-cpu.dll");
             foreach (string dll in Directory.GetFiles(extractDir, "ggml-cpu-*.dll", SearchOption.AllDirectories))
             {
                 cancel.ThrowIfCancellationRequested();
@@ -177,6 +179,28 @@ namespace AkkeohsVegas.Installer
 
             if (!File.Exists(Path.Combine(binDir, "whisper-cli.exe")))
                 throw new FileNotFoundException("whisper-cli.exe was not found inside the whisper.cpp zip.");
+            if (!File.Exists(Path.Combine(binDir, "ggml-cpu.dll"))
+                && Directory.GetFiles(binDir, "ggml-cpu-*.dll").Length == 0)
+            {
+                throw new FileNotFoundException(
+                    "ggml-cpu.dll was not found inside the whisper.cpp zip. " +
+                    "whisper-cli.exe will fail without it.");
+            }
+        }
+
+        private static bool HasCompleteWhisperBinaries(string binDir)
+        {
+            if (!File.Exists(Path.Combine(binDir, "whisper-cli.exe")))
+                return false;
+            if (!File.Exists(Path.Combine(binDir, "whisper.dll")))
+                return false;
+            if (!File.Exists(Path.Combine(binDir, "ggml.dll")))
+                return false;
+            if (!File.Exists(Path.Combine(binDir, "ggml-base.dll")))
+                return false;
+            if (File.Exists(Path.Combine(binDir, "ggml-cpu.dll")))
+                return true;
+            return Directory.GetFiles(binDir, "ggml-cpu-*.dll").Length > 0;
         }
 
         public void EnsureFfmpeg(string binDir, CancellationToken cancel)
